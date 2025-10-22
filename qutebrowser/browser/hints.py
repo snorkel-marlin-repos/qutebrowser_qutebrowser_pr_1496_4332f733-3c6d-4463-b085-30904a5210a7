@@ -490,9 +490,7 @@ class HintManager(QObject):
             url: The URL to open as a QUrl.
             context: The HintContext to use.
         """
-        sel = (context.target == Target.yank_primary and
-               utils.supports_selection())
-
+        sel = context.target == Target.yank_primary
         urlstr = url.toString(QUrl.FullyEncoded | QUrl.RemovePassword)
         utils.set_clipboard(urlstr, selection=sel)
 
@@ -737,9 +735,9 @@ class HintManager(QObject):
             webview.openurl(url)
 
     @cmdutils.register(instance='hintmanager', scope='tab', name='hint',
-                       win_id='win_id', star_args_optional=True)
+                       win_id='win_id')
     def start(self, rapid=False, group=webelem.Group.all, target=Target.normal,
-              *args, win_id):
+              *args: {'nargs': '*'}, win_id):
         """Start hinting.
 
         Args:

@@ -109,8 +109,11 @@ The following libraries are optional and provide a better user experience:
 To generate the documentation for the `:help` command, when using the git
 repository (rather than a release), http://asciidoc.org/[asciidoc] is needed.
 
-On Windows, https://pypi.python.org/pypi/colorama/[colorama] is needed to
-display colored log output.
+The following libraries are optional and provide colored logging in the
+console:
+
+* https://pypi.python.org/pypi/colorlog/[colorlog]
+* On Windows: https://pypi.python.org/pypi/colorama/[colorama]
 
 See link:INSTALL.asciidoc[INSTALL] for directions on how to install qutebrowser
 and its dependencies.
@@ -145,21 +148,20 @@ Contributors, sorted by the number of commits in descending order:
 * Alexander Cogneau
 * Felix Van der Jeugt
 * Martin Tournoij
-* Ryan Roden-Corrent
 * Raphael Pierzina
 * Joel Torstensson
+* Ryan Roden-Corrent
 * Patric Schmitz
 * Claude
-* Corentin Julé
 * meles5
 * Tarcisio Fedrizzi
-* Philipp Hansch
 * Artur Shaik
 * Nathan Isom
 * Thorsten Wißmann
-* Panagiotis Ktistakis
+* Philipp Hansch
 * Kevin Velghe
 * Austin Anderson
+* Panagiotis Ktistakis
 * Jimmy
 * Alexey "Averrin" Nabrodov
 * avk
@@ -170,14 +172,13 @@ Contributors, sorted by the number of commits in descending order:
 * Clayton Craft
 * Oliver Caldwell
 * Jonas Schürmann
-* error800
 * Jakub Klinkovský
 * skinnay
+* error800
 * Zach-Button
 * Halfwit
 * rikn00
 * kanikaa1234
-* haitaka
 * Michael Ilsaas
 * Martin Zimmermann
 * Brian Jackson
@@ -189,7 +190,6 @@ Contributors, sorted by the number of commits in descending order:
 * Link
 * Larry Hynes
 * Johannes Altmanninger
-* Ismail
 * Samir Benmendil
 * Regina Hug
 * Mathias Fussenegger
@@ -197,6 +197,7 @@ Contributors, sorted by the number of commits in descending order:
 * Jan Verbeek
 * Fritz V155 Reichwald
 * Franz Fellner
+* Corentin Jule
 * zwarag
 * xd1le
 * issue

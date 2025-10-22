@@ -355,6 +355,10 @@ def data(readonly=False):
              "Hide the window decoration when using wayland "
              "(requires restart)"),
 
+            ('show-keyhints',
+             SettingValue(typ.Bool(), 'true'),
+             "Show possible keychains based on the current keystring"),
+
             readonly=readonly
         )),
 
@@ -473,7 +477,7 @@ def data(readonly=False):
              "Timeout for ambiguous key bindings."),
 
             ('partial-timeout',
-             SettingValue(typ.Int(minval=0, maxval=MAXVALS['int']), '1000'),
+             SettingValue(typ.Int(minval=0, maxval=MAXVALS['int']), '5000'),
              "Timeout for partially typed key bindings."),
 
             ('insert-mode-on-plugins',
@@ -1196,6 +1200,18 @@ def data(readonly=False):
              "Background color for webpages if unset (or empty to use the "
              "theme's color)"),
 
+            ('keyhint.fg',
+             SettingValue(typ.QssColor(), '#FFFFFF'),
+             "Text color for the keyhint widget."),
+
+            ('keyhint.fg.suffix',
+             SettingValue(typ.CssColor(), '#FFFF00'),
+             "Highlight color for keys to complete the current keychain"),
+
+            ('keyhint.bg',
+             SettingValue(typ.QssColor(), 'rgba(0, 0, 0, 80%)'),
+             "Background color of the keyhint widget."),
+
             readonly=readonly
         )),
 
@@ -1276,6 +1292,10 @@ def data(readonly=False):
              SettingValue(
                  typ.Int(none_ok=True, minval=1, maxval=MAXVALS['int']), ''),
              "The default font size for fixed-pitch text."),
+
+            ('keyhint',
+             SettingValue(typ.Font(), DEFAULT_FONT_SIZE + ' ${_monospace}'),
+             "Font used in the keyhint widget."),
 
             readonly=readonly
         )),
@@ -1386,13 +1406,13 @@ KEY_DATA = collections.OrderedDict([
     ('normal', collections.OrderedDict([
         ('clear-keychain ;; search', ['<Escape>']),
         ('set-cmd-text -s :open', ['o']),
-        ('set-cmd-text :open {url:pretty}', ['go']),
+        ('set-cmd-text :open {url}', ['go']),
         ('set-cmd-text -s :open -t', ['O']),
-        ('set-cmd-text :open -t {url:pretty}', ['gO']),
+        ('set-cmd-text :open -t {url}', ['gO']),
         ('set-cmd-text -s :open -b', ['xo']),
-        ('set-cmd-text :open -b {url:pretty}', ['xO']),
+        ('set-cmd-text :open -b {url}', ['xO']),
         ('set-cmd-text -s :open -w', ['wo']),
-        ('set-cmd-text :open -w {url:pretty}', ['wO']),
+        ('set-cmd-text :open -w {url}', ['wO']),
         ('open -t', ['ga', '<Ctrl-T>']),
         ('open -w', ['<Ctrl-N>']),
         ('tab-close', ['d', '<Ctrl-W>']),

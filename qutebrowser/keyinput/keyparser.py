@@ -19,8 +19,6 @@
 
 """Advanced keyparsers."""
 
-import traceback
-
 from qutebrowser.keyinput.basekeyparser import BaseKeyParser
 from qutebrowser.utils import message, utils
 from qutebrowser.commands import runners, cmdexc
@@ -43,8 +41,7 @@ class CommandKeyParser(BaseKeyParser):
         try:
             self._commandrunner.run(cmdstr, count)
         except (cmdexc.CommandMetaError, cmdexc.CommandError) as e:
-            message.error(self._win_id, e, immediately=True,
-                          stack=traceback.format_exc())
+            message.error(self._win_id, e, immediately=True)
 
 
 class PassthroughKeyParser(CommandKeyParser):

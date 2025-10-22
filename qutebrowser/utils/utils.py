@@ -757,20 +757,22 @@ def newest_slice(iterable, count):
 
 def set_clipboard(data, selection=False):
     """Set the clipboard to some given data."""
-    if selection and not supports_selection():
+    clipboard = QApplication.clipboard()
+    if selection and not clipboard.supportsSelection():
         raise SelectionUnsupportedError
     if log_clipboard:
         what = 'primary selection' if selection else 'clipboard'
         log.misc.debug("Setting fake {}: {}".format(what, json.dumps(data)))
     else:
         mode = QClipboard.Selection if selection else QClipboard.Clipboard
-        QApplication.clipboard().setText(data, mode=mode)
+        clipboard.setText(data, mode=mode)
 
 
 def get_clipboard(selection=False):
     """Get data from the clipboard."""
     global fake_clipboard
-    if selection and not supports_selection():
+    clipboard = QApplication.clipboard()
+    if selection and not clipboard.supportsSelection():
         raise SelectionUnsupportedError
 
     if fake_clipboard is not None:
@@ -778,11 +780,6 @@ def get_clipboard(selection=False):
         fake_clipboard = None
     else:
         mode = QClipboard.Selection if selection else QClipboard.Clipboard
-        data = QApplication.clipboard().text(mode=mode)
+        data = clipboard.text(mode=mode)
 
     return data
-
-
-def supports_selection():
-    """Check if the OS supports primary selection."""
-    return QApplication.clipboard().supportsSelection()

@@ -742,13 +742,11 @@ class QssColor(CssColor):
         color_func_regexes: Valid function regexes.
     """
 
-    num = r'[0-9]{1,3}%?'
-
     color_func_regexes = [
-        r'rgb\({num},\s*{num},\s*{num}\)'.format(num=num),
-        r'rgba\({num},\s*{num},\s*{num},\s*{num}\)'.format(num=num),
-        r'hsv\({num},\s*{num},\s*{num}\)'.format(num=num),
-        r'hsva\({num},\s*{num},\s*{num},\s*{num}\)'.format(num=num),
+        r'rgb\([0-9]{1,3}%?, [0-9]{1,3}%?, [0-9]{1,3}%?\)',
+        r'rgba\([0-9]{1,3}%?, [0-9]{1,3}%?, [0-9]{1,3}%?, [0-9]{1,3}%?\)',
+        r'hsv\([0-9]{1,3}%?, [0-9]{1,3}%?, [0-9]{1,3}%?\)',
+        r'hsva\([0-9]{1,3}%?, [0-9]{1,3}%?, [0-9]{1,3}%?, [0-9]{1,3}%?\)',
         r'qlineargradient\(.*\)',
         r'qradialgradient\(.*\)',
         r'qconicalgradient\(.*\)',

@@ -350,8 +350,6 @@ class CommandDispatcher:
         new_tabbed_browser.set_page_title(idx, cur_title)
         if config.get('tabs', 'show-favicons'):
             new_tabbed_browser.setTabIcon(idx, curtab.icon())
-            if config.get('tabs', 'tabs-are-windows'):
-                new_tabbed_browser.window().setWindowIcon(curtab.icon())
         newtab.keep_icon = True
         newtab.setZoomFactor(curtab.zoomFactor())
         history = qtutils.serialize(curtab.history())
@@ -575,10 +573,9 @@ class CommandDispatcher:
             widget.keyReleaseEvent(release_evt)
 
     @cmdutils.register(instance='command-dispatcher', hide=True,
-                       scope='window', count='count',
-                       flags={'horizontal': 'x'})
-    def scroll_perc(self, perc: {'type': float}=None, horizontal=False,
-                    count=None):
+                       scope='window', count='count')
+    def scroll_perc(self, perc: {'type': float}=None,
+                    horizontal: {'flag': 'x'}=False, count=None):
         """Scroll to a specific percentage of the page.
 
         The percentage can be given either as argument or as count.
@@ -689,7 +686,7 @@ class CommandDispatcher:
             s = self._current_url().toString(flags)
             what = 'URL'
 
-        if sel and utils.supports_selection():
+        if sel and QApplication.clipboard().supportsSelection():
             target = "primary selection"
         else:
             sel = False
@@ -834,7 +831,7 @@ class CommandDispatcher:
             bg: Open in a background tab.
             window: Open in new window.
         """
-        if sel and utils.supports_selection():
+        if sel and QApplication.clipboard().supportsSelection():
             target = "Primary selection"
         else:
             sel = False
@@ -1339,27 +1336,6 @@ class CommandDispatcher:
         url = QUrl('qute://help/{}'.format(path))
         self._open(url, tab, bg, window)
 
-    @cmdutils.register(instance='command-dispatcher', scope='window')
-    def messages(self, level='error', plain=False, tab=False, bg=False,
-                 window=False):
-        """Show a log of past messages.
-
-        Args:
-            level: Include messages with `level` or higher severity.
-                   Valid values: vdebug, debug, info, warning, error, critical.
-            plain: Whether to show plaintext (as opposed to html).
-            tab: Open in a new tab.
-            bg: Open in a background tab.
-            window: Open in a new window.
-        """
-        if level.upper() not in log.LOG_LEVELS:
-            raise cmdexc.CommandError("Invalid log level {}!".format(level))
-        if plain:
-            url = QUrl('qute://plainlog?level={}'.format(level))
-        else:
-            url = QUrl('qute://log?level={}'.format(level))
-        self._open(url, tab, bg, window)
-
     @cmdutils.register(instance='command-dispatcher',
                        modes=[KeyMode.insert], hide=True, scope='window')
     def open_editor(self):
@@ -1422,7 +1398,7 @@ class CommandDispatcher:
         try:
             sel = utils.get_clipboard(selection=True)
         except utils.SelectionUnsupportedError:
-            sel = utils.get_clipboard()
+            return
 
         log.misc.debug("Pasting primary selection into element {}".format(
             elem.debug_text()))
@@ -1778,7 +1754,7 @@ class CommandDispatcher:
             message.info(self._win_id, "Nothing to yank")
             return
 
-        if sel and utils.supports_selection():
+        if sel and QApplication.clipboard().supportsSelection():
             target = "primary selection"
         else:
             sel = False

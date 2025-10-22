@@ -29,7 +29,6 @@ Added
     - The `'` mark gets set when moving away (hinting link with anchor, searching, etc.) so you can move back with `''`
 - New `--force-color` argument to force colored logging even if stdout is not a
   terminal
-- New `:messages` command to show error messages
 
 Changed
 ~~~~~~~
@@ -45,19 +44,6 @@ Changed
 - Various SSL ciphers are now disabled by default. With recent Qt/OpenSSL
   versions those already all are disabled, but with older versions they might
   not be.
-- Show favicons as window icon with `tabs-are-windows` set.
-- `:bind <key>` without a command now shows the existing binding
-- The optional `colorlog` dependency got removed, as qutebrowser now displays
-  colored logs without it.
-
-Fixed
------
-
-- Fixed crash when downloading from an URL with SSL errors
-- Close file handles correctly when a download failed
-- Fixed crash when using `;Y` (`:hint links yank-primary`) on a system without
-  primary selection
-- Don't display quit confirmation with finished downloads
 
 v0.6.2
 ------

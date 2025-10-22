@@ -116,7 +116,6 @@ class HostBlocker:
             self._local_hosts_file = None
         else:
             self._local_hosts_file = os.path.join(data_dir, 'blocked-hosts')
-        self.on_config_changed()
 
         config_dir = standarddir.config()
         if config_dir is None:
@@ -274,13 +273,11 @@ class HostBlocker:
     def on_config_changed(self):
         """Update files when the config changed."""
         urls = config.get('content', 'host-block-lists')
-        if urls is None and self._local_hosts_file is not None:
+        if urls is None:
             try:
                 os.remove(self._local_hosts_file)
-            except FileNotFoundError:
-                pass
-            except OSError as e:
-                log.misc.exception("Failed to delete hosts file: {}".format(e))
+            except OSError:
+                log.misc.exception("Failed to delete hosts file.")
 
     def on_download_finished(self, download):
         """Check if all downloads are finished and if so, trigger reading.

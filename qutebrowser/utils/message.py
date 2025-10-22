@@ -17,14 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with qutebrowser.  If not, see <http://www.gnu.org/licenses/>.
 
-# Because every method needs to have a log_stack argument
-# pylint: disable=unused-variable
-
 """Message singleton so we don't have to define unneeded signals."""
 
 import datetime
 import collections
-import traceback
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject
 from PyQt5.QtWidgets import QApplication
@@ -35,23 +31,6 @@ from qutebrowser.utils import usertypes, log, objreg, utils
 _QUEUED = []
 QueuedMsg = collections.namedtuple(
     'QueuedMsg', ['time', 'win_id', 'method_name', 'text', 'args', 'kwargs'])
-
-
-def _log_stack(typ, stack):
-    """Log the given message stacktrace.
-
-    Args:
-        typ: The type of the message (str)
-        stack: The stack as an iterable of strings or a single string
-    """
-    try:
-        # traceback.format_exc() produces a list of strings, while
-        # traceback.format_stack() produces a single string...
-        stack = stack.splitlines()
-    except AttributeError:
-        pass
-    indented = '\n'.join('  ' + line.rstrip() for line in stack)
-    log.message.debug("Stack for {} message:\n{}".format(typ, indented))
 
 
 def _wrapper(win_id, method_name, text, *args, **kwargs):
@@ -66,7 +45,6 @@ def _wrapper(win_id, method_name, text, *args, **kwargs):
         text: The text do display.
         *args/**kwargs: Arguments to pass to the method.
     """
-    kwargs['log_stack'] = False
     msg = QueuedMsg(time=datetime.datetime.now(), win_id=win_id,
                     method_name=method_name, text=text, args=args,
                     kwargs=kwargs)
@@ -133,20 +111,13 @@ def on_focus_changed():
         getattr(bridge, msg.method_name)(text, *msg.args, **msg.kwargs)
 
 
-def error(win_id, message, immediately=False, *, stack=None):
+def error(win_id, message, immediately=False):
     """Convenience function to display an error message in the statusbar.
 
     Args:
         win_id: The ID of the window which is calling this function.
         others: See MessageBridge.error.
-        stack: The stack trace to show.
     """
-    if stack is None:
-        stack = traceback.format_stack()
-        typ = 'error'
-    else:
-        typ = 'error (from exception)'
-    _log_stack(typ, stack)
     _wrapper(win_id, 'error', message, immediately)
 
 
@@ -157,7 +128,6 @@ def warning(win_id, message, immediately=False):
         win_id: The ID of the window which is calling this function.
         others: See MessageBridge.warning.
     """
-    _log_stack('warning', traceback.format_stack())
     _wrapper(win_id, 'warning', message, immediately)
 
 
@@ -292,7 +262,7 @@ class MessageBridge(QObject):
     def __repr__(self):
         return utils.get_repr(self)
 
-    def error(self, msg, immediately=False, *, log_stack=True):
+    def error(self, msg, immediately=False):
         """Display an error in the statusbar.
 
         Args:
@@ -302,15 +272,12 @@ class MessageBridge(QObject):
                          displayed (False). Messages resulting from direct user
                          input should be displayed immediately, all other
                          messages should be queued.
-            log_stack: Log the stacktrace of the error.
         """
         msg = str(msg)
         log.message.error(msg)
-        if log_stack:
-            _log_stack('error (delayed)', traceback.format_stack())
         self.s_error.emit(msg, immediately)
 
-    def warning(self, msg, immediately=False, *, log_stack=True):
+    def warning(self, msg, immediately=False):
         """Display an warning in the statusbar.
 
         Args:
@@ -320,59 +287,51 @@ class MessageBridge(QObject):
                          displayed (False). Messages resulting from direct user
                          input should be displayed immediately, all other
                          messages should be queued.
-            log_stack: Log the stacktrace of the warning.
         """
         msg = str(msg)
         log.message.warning(msg)
-        if log_stack:
-            _log_stack('warning (delayed)', traceback.format_stack())
         self.s_warning.emit(msg, immediately)
 
-    def info(self, msg, immediately=True, *, log_stack=False):
+    def info(self, msg, immediately=True):
         """Display an info text in the statusbar.
 
         Args:
             See error(). Note immediately is True by default, because messages
             do rarely happen without user interaction.
-
-            log_stack is ignored.
         """
         msg = str(msg)
         log.message.info(msg)
         self.s_info.emit(msg, immediately)
 
-    def set_cmd_text(self, text, *, log_stack=False):
+    def set_cmd_text(self, text):
         """Set the command text of the statusbar.
 
         Args:
             text: The text to set.
-            log_stack: ignored
         """
         text = str(text)
         log.message.debug(text)
         self.s_set_cmd_text.emit(text)
 
-    def set_text(self, text, *, log_stack=False):
+    def set_text(self, text):
         """Set the normal text of the statusbar.
 
         Args:
             text: The text to set.
-            log_stack: ignored
         """
         text = str(text)
         log.message.debug(text)
         self.s_set_text.emit(text)
 
-    def maybe_reset_text(self, text, *, log_stack=False):
+    def maybe_reset_text(self, text):
         """Reset the text in the statusbar if it matches an expected text.
 
         Args:
             text: The expected text.
-            log_stack: ignored
         """
         self.s_maybe_reset_text.emit(str(text))
 
-    def ask(self, question, blocking, *, log_stack=False):
+    def ask(self, question, blocking):
         """Ask a question to the user.
 
         Note this method doesn't return the answer, it only blocks. The caller
@@ -382,6 +341,5 @@ class MessageBridge(QObject):
             question: A Question object.
             blocking: Whether to return immediately or wait until the
                       question is answered.
-            log_stack: ignored
         """
         self.s_question.emit(question, blocking)

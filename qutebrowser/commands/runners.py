@@ -20,7 +20,6 @@
 """Module containing command managers (SearchRunner and CommandRunner)."""
 
 import collections
-import traceback
 
 from PyQt5.QtCore import pyqtSlot, QUrl, QObject
 
@@ -265,8 +264,7 @@ class CommandRunner(QObject):
         try:
             self.run(text, count)
         except (cmdexc.CommandMetaError, cmdexc.CommandError) as e:
-            message.error(self._win_id, e, immediately=True,
-                          stack=traceback.format_exc())
+            message.error(self._win_id, e, immediately=True)
 
     @pyqtSlot(str, int)
     def run_safely_init(self, text, count=None):
@@ -278,4 +276,4 @@ class CommandRunner(QObject):
         try:
             self.run(text, count)
         except (cmdexc.CommandMetaError, cmdexc.CommandError) as e:
-            message.error(self._win_id, e, stack=traceback.format_exc())
+            message.error(self._win_id, e)

@@ -21,7 +21,7 @@
 
 import pytest
 
-from qutebrowser.commands import cmdutils, cmdexc, argparser
+from qutebrowser.commands import cmdutils, cmdexc
 
 
 class TestCheckOverflow:
@@ -172,55 +172,3 @@ class TestRegister:
             """Blah."""
             pass
         assert cmdutils.cmd_dict['fun'].hide
-
-    def test_wrong_completion_count(self):
-        with pytest.raises(ValueError):
-            @cmdutils.register(completion=['one', 'two'])
-            def fun(arg):
-                """Blah."""
-                pass
-
-    def test_star_args(self):
-        """Check handling of *args."""
-        @cmdutils.register()
-        def fun(*args):
-            """Blah."""
-            pass
-        with pytest.raises(argparser.ArgumentParserError):
-            cmdutils.cmd_dict['fun'].parser.parse_args([])
-
-    def test_star_args_optional(self):
-        """Check handling of *args withstar_args_optional."""
-        @cmdutils.register(star_args_optional=True)
-        def fun(*args):
-            """Blah."""
-            pass
-        cmdutils.cmd_dict['fun'].parser.parse_args([])
-
-    def test_flag(self):
-        @cmdutils.register()
-        def fun(arg=False):
-            """Blah."""
-            pass
-        parser = cmdutils.cmd_dict['fun'].parser
-        assert parser.parse_args(['--arg']).arg
-        assert parser.parse_args(['-a']).arg
-        assert not parser.parse_args([]).arg
-
-    def test_flag_argument(self):
-        @cmdutils.register(flags={'arg': 'b'})
-        def fun(arg=False):
-            """Blah."""
-            pass
-        parser = cmdutils.cmd_dict['fun'].parser
-
-        assert parser.parse_args(['-b']).arg
-        with pytest.raises(argparser.ArgumentParserError):
-            parser.parse_args(['-a'])
-
-    def test_unknown_argument_in_flags(self):
-        with pytest.raises(ValueError):
-            @cmdutils.register(flags={'foobar': 'f'})
-            def fun():
-                """Blah."""
-                pass

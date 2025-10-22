@@ -202,13 +202,6 @@ def selection_supported(qapp):
         pytest.skip("OS doesn't support primary selection!")
 
 
-@bdd.when("selection is not supported")
-def selection_not_supported(qapp):
-    """Skip the test if selection is supported."""
-    if qapp.clipboard().supportsSelection():
-        pytest.skip("OS supports primary selection!")
-
-
 @bdd.when(bdd.parsers.re(r'I put "(?P<content>.*)" into the '
                          r'(?P<what>primary selection|clipboard)'))
 def fill_clipboard(quteproc, httpbin, what, content):
@@ -366,14 +359,6 @@ def check_contents_plain(quteproc, text):
     assert text in content
 
 
-@bdd.then(bdd.parsers.parse('the page should not contain the plaintext '
-                            '"{text}"'))
-def check_not_contents_plain(quteproc, text):
-    """Check the current page's content based on a substring."""
-    content = quteproc.get_content().strip()
-    assert text not in content
-
-
 @bdd.then(bdd.parsers.parse('the json on the page should be:\n{text}'))
 def check_contents_json(quteproc, text):
     """Check the current page's content as json."""
@@ -426,8 +411,8 @@ def clipboard_contains(quteproc, httpbin, what, content):
 
 
 @bdd.then(bdd.parsers.parse('the clipboard should contain:\n{content}'))
-def clipboard_contains_multiline(quteproc, httpbin, content):
-    expected = textwrap.dedent(content).replace('(port)', str(httpbin.port))
+def clipboard_contains_multiline(quteproc, content):
+    expected = textwrap.dedent(content)
     quteproc.wait_for(message='Setting fake clipboard: {}'.format(
         json.dumps(expected)))
 
